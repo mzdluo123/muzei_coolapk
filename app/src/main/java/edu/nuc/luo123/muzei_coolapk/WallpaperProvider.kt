@@ -30,6 +30,7 @@ class WallpaperProvider : MuzeiArtProvider() {
                     .build()
             ).build()
             WorkManager.getInstance(it).enqueue(lastWorkRequest)
+            page++
         }
 
     }
