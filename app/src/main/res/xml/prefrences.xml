@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="基本设置">
+
+        <ListPreference
+            android:defaultValue="二次元"
+            android:entries="@array/image_type"
+            android:entryValues="@array/image_type"
+            android:key="image_type"
+            android:title="图片类型" />
+        <ListPreference
+            android:defaultValue="recommend"
+            android:entries="@array/image_rank"
+            android:entryValues="@array/image_rank_values"
+            android:key="image_rank"
+            android:title="图片排序" />
+
+    </PreferenceCategory>
+</PreferenceScreen>
