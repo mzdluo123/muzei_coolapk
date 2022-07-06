@@ -18,7 +18,6 @@ class WallpaperProvider : MuzeiArtProvider() {
     override fun onLoadRequested(initial: Boolean) {
         this.context?.let {
             val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(it)
-
             if (initial) {
                 page = 1
             }
@@ -27,6 +26,7 @@ class WallpaperProvider : MuzeiArtProvider() {
                     .putInt("page", page)
                     .putString("type", sharedPreferences.getString("image_type", "二次元"))
                     .putString("rank", sharedPreferences.getString("image_rank", "hot"))
+                    .putBoolean("only_2k",sharedPreferences.getBoolean("only_2k",false))
                     .build()
             ).build()
             WorkManager.getInstance(it).enqueue(lastWorkRequest)

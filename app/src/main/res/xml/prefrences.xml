@@ -15,6 +15,10 @@
             android:entryValues="@array/image_rank_values"
             android:key="image_rank"
             android:title="图片排序" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="only_2k"
+            android:title="只看2K" />
 
     </PreferenceCategory>
 </PreferenceScreen>

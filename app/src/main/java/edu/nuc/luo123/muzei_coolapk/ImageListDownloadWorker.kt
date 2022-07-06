@@ -12,6 +12,7 @@ import com.google.android.apps.muzei.api.provider.ProviderContract
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.lang.Exception
 
 class ImageListDownloadWorker(appContext: Context, workerParameters: WorkerParameters) :
     Worker(appContext, workerParameters) {
@@ -20,6 +21,7 @@ class ImageListDownloadWorker(appContext: Context, workerParameters: WorkerParam
     private val page = workerParameters.inputData.getInt("page", 1)
     private var type = workerParameters.inputData.getString("type") ?: ""
     private var rank = workerParameters.inputData.getString("rank") ?: ""
+    private val only2k = workerParameters.inputData.getBoolean("only_2k", false)
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun doWork(): Result {
@@ -48,26 +50,37 @@ class ImageListDownloadWorker(appContext: Context, workerParameters: WorkerParam
                             Toast.LENGTH_SHORT
                         ).show()
                     }
-
-                    val artworks = mutableListOf<Artwork>()
-                    response.body()?.data?.forEach { d ->
-
-                        artworks.add(
-                            Artwork.Builder()
-                                .title(d.title)
-                                .token(d.id)
-                                .persistentUri(Uri.parse(d.picArr[0]))
-                                .attribution(d.tags)
-                                //.byline(d.message)
-                                .webUri(Uri.parse(d.url))
-                                .build()
-                        )
-                    }
-
-                    ProviderContract.getProviderClient(
+                    val client =  ProviderContract.getProviderClient(
                         applicationContext,
                         WallpaperProvider::class.java
-                    ).addArtwork(artworks)
+                    )
+
+                    for (d in response.body()?.data!!) {
+                        val parts = d.label.split("x")
+                        if (parts.size < 2) {
+                            continue
+                        }
+                        if (only2k) {
+                            try {
+                                if (parts[0].toInt() < 1440 || parts[1].toInt() < 1440) {
+                                    continue
+                                }
+                            } catch (e: Exception) {
+                                continue
+                            }
+                        }
+                        for (url in d.picArr){
+                            client.addArtwork(
+                                Artwork.Builder()
+                                    .token(d.id)
+                                    .persistentUri(Uri.parse(url))
+                                    .attribution(d.tags)
+                                    .webUri(Uri.parse(url))
+                                    .build()
+                            )
+
+                        }
+                    }
                 }
             })
         return Result.success()
