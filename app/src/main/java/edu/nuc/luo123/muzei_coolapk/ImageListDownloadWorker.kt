@@ -22,6 +22,7 @@ class ImageListDownloadWorker(appContext: Context, workerParameters: WorkerParam
     private var type = workerParameters.inputData.getString("type") ?: ""
     private var rank = workerParameters.inputData.getString("rank") ?: ""
     private val only2k = workerParameters.inputData.getBoolean("only_2k", false)
+    private val onlyPhone = workerParameters.inputData.getBoolean("only_phone", true)
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun doWork(): Result {
@@ -63,6 +64,15 @@ class ImageListDownloadWorker(appContext: Context, workerParameters: WorkerParam
                         if (only2k) {
                             try {
                                 if (parts[0].toInt() < 1440 || parts[1].toInt() < 1440) {
+                                    continue
+                                }
+                            } catch (e: Exception) {
+                                continue
+                            }
+                        }
+                        if (onlyPhone) {
+                            try {
+                                if (parts[0].toInt() > parts[1].toInt()) {
                                     continue
                                 }
                             } catch (e: Exception) {
