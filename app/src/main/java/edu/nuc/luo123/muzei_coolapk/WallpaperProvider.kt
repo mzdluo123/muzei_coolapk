@@ -27,6 +27,7 @@ class WallpaperProvider : MuzeiArtProvider() {
                     .putString("type", sharedPreferences.getString("image_type", "二次元"))
                     .putString("rank", sharedPreferences.getString("image_rank", "hot"))
                     .putBoolean("only_2k",sharedPreferences.getBoolean("only_2k",false))
+                    .putBoolean("only_phone",sharedPreferences.getBoolean("only_phone", true))
                     .build()
             ).build()
             WorkManager.getInstance(it).enqueue(lastWorkRequest)

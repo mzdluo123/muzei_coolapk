@@ -19,6 +19,10 @@
             android:defaultValue="true"
             android:key="only_2k"
             android:title="只看2K" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="only_phone"
+            android:title="只看手机壁纸" />
 
     </PreferenceCategory>
 </PreferenceScreen>

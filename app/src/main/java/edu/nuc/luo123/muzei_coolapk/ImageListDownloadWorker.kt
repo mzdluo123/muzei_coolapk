@@ -22,6 +22,7 @@ class ImageListDownloadWorker(appContext: Context, workerParameters: WorkerParam
     private var type = workerParameters.inputData.getString("type") ?: ""
     private var rank = workerParameters.inputData.getString("rank") ?: ""
     private val only2k = workerParameters.inputData.getBoolean("only_2k", false)
+    private val onlyPhone = workerParameters.inputData.getBoolean("only_phone", true)
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun doWork(): Result {
@@ -56,29 +57,45 @@ class ImageListDownloadWorker(appContext: Context, workerParameters: WorkerParam
                     )
 
                     for (d in response.body()?.data!!) {
-                        val parts = d.label.split("x")
-                        if (parts.size < 2) {
-                            continue
-                        }
-                        if (only2k) {
+                        for (picUrl in d.picArr) {
+                            val parts = picUrl.split("@")
+                            if (parts.size != 2) {
+                                continue
+                            }
+                            val parts2 = parts[1].split(".")
+                            if (parts2.size != 2) {
+                                continue
+                            }
+                            val imgResolution = parts2[0]
+                            val resolution = imgResolution.split("x")
+                            if (resolution.size != 2) {
+                                continue
+                            }
                             try {
-                                if (parts[0].toInt() < 1440 || parts[1].toInt() < 1440) {
-                                    continue
+                                val xSize = resolution[0].toInt()
+                                val ySize = resolution[1].toInt()
+
+                                if (only2k) {
+                                    if (xSize < 1440 || ySize < 1440) {
+                                        continue
+                                    }
+                                }
+                                if (onlyPhone) {
+                                    if (xSize >= ySize) {
+                                        continue
+                                    }
                                 }
                             } catch (e: Exception) {
                                 continue
                             }
-                        }
-                        for (url in d.picArr){
                             client.addArtwork(
                                 Artwork.Builder()
                                     .token(d.id)
-                                    .persistentUri(Uri.parse(url))
+                                    .persistentUri(Uri.parse(picUrl))
                                     .attribution(d.tags)
-                                    .webUri(Uri.parse(url))
+                                    .webUri(Uri.parse(picUrl))
                                     .build()
                             )
-
                         }
                     }
                 }
