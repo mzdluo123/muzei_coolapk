@@ -12,7 +12,7 @@ import com.google.android.apps.muzei.api.provider.ProviderContract
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import kotlin.Exception
+import java.lang.Exception
 
 class ImageListDownloadWorker(appContext: Context, workerParameters: WorkerParameters) :
     Worker(appContext, workerParameters) {
